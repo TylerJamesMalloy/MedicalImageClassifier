@@ -57,6 +57,7 @@ target_list = []
 
 for filename in glob.iglob('../train/Type_1_small/*.jpg'):
     image = Image.open(filename)
+    # 320x240 now just for testing, need to figure out best dimensions
     image = scipy.misc.imresize(image, (320, 240))
     image = np.array(image)
     print(image.shape)
@@ -69,5 +70,5 @@ features = torch.from_numpy(feature_array)
 target_array = np.array(feature_list)
 targets = torch.from_numpy(target_array)
 
-train = data_utils.TensorDataset(features, targets)
-train_loader = data_utils.DataLoader(train, batch_size=50, shuffle=True)
+train = TensorDataset(features, targets)
+train_loader = DataLoader(train, batch_size=50, shuffle=True)
