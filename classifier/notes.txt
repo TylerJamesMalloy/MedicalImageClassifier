@@ -1,0 +1,50 @@
+"""
+normalize = transforms.Normalize(
+   mean=[0.485, 0.456, 0.406],
+   std=[0.229, 0.224, 0.225]
+)
+
+transform = transforms.Compose([
+   transforms.Scale(256),
+   transforms.CenterCrop(224),
+   transforms.ToTensor(),
+   normalize
+])
+"""
+
+
+for filename in glob.iglob('../train/Type_1_small/*.jpg'):
+
+    image = Image.open(filename)
+    img_tensor = transform(image)
+    img_tensor.unsqueeze_(0)
+
+    input, label = Variable(img_tensor), Variable(torch.FloatTensor([1]))
+    
+    # zero the parameter gradients
+    optimizer.zero_grad()
+
+    # forward + backward + optimize
+    output = net(input)
+    loss = criterion(output, label)
+    loss.backward()
+    optimizer.step()
+
+"""
+
+img_variable = Variable(img_tensor)
+fc_out = squeeze(img_variable)
+print(fc_out.data.numpy().argmax())
+
+# Iterate through Type 2 image files
+for filename in glob.iglob('../train/Type_2/*.jpg'):
+    image = Image.open(filename)
+    img_tensor = transform(image)
+    img_tensor.unsqueeze_(0)
+
+# Iterate through Type 3 image files
+for filename in glob.iglob('../train/Type_3/*.jpg'):
+    image = Image.open(filename)
+    img_tensor = transform(image)
+    img_tensor.unsqueeze_(0)
+"""
