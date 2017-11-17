@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import opencv as cv2
+import cv2
 import math
 from sklearn import mixture
 from sklearn.utils import shuffle
@@ -10,17 +10,20 @@ import os
 from multiprocessing import Pool, cpu_count
 from functools import partial
 from subprocess import check_output
-print(check_output(["ls", "../input"]).decode("utf8"))
+# print(check_output(["ls", "../input"]).decode("utf8"))
 
 TRAIN_DATA = "../input/train"
 
-types = ['Type_1']#,'Type_2','Type_3']
+types = ['Type_1','Type_2','Type_3']
 type_ids = []
 
 for type in enumerate(types):
     type_i_files = glob(os.path.join(TRAIN_DATA, type[1], "*.jpg"))
     type_i_ids = np.array([s[len(TRAIN_DATA)+8:-4] for s in type_i_files])
-    type_ids.append(type_i_ids[:5])
+    type_ids.append(type_i_ids)
+    # type_ids.append(type_i_ids[:5])
+
+
 
 def get_filename(image_id, image_type):
     """
@@ -244,7 +247,14 @@ def parallelize_image_cropping(image_ids):
                           (ret[i][2][0]+ret[i][2][2], ret[i][2][1]+ret[i][2][3]),
                           255,
                           2)
+            # Save image 
+
+            out_filepath = "../processed_images/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
+            cv2.imwrite(out_filepath,cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+        
         ret = []
     out.close()
 
     return
+
+parallelize_image_cropping(type_ids)
