@@ -1,0 +1,15 @@
+cv2/__init__.py,sha256=rIlcsTAoP1DCaPI8-RlPAw7cH57aPK4Xj-XN3thPhJg,411
+cv2/cv2.cpython-36m-darwin.so,sha256=AM8GBKoD7ypZLbLlxqRvIGAJ4d2prNmVY4PKDkZB4rY,97057908
+cv2/LICENSE-3RD-PARTY.txt,sha256=ASOHdb1kCQfSVwEl-7F3POQjZOEYXmm9eLTEHI55XrU,29170
+cv2/LICENSE.txt,sha256=in8VvHR9KJNx4KllBuHArJTzUppTiHtrqvUKeflxtZY,1097
+cv2/.dylibs/QtCore,sha256=-yorAYnp2F2ol9V9nhp4KXp19c4IXacXl4aDSH7nlAo,3277068
+cv2/.dylibs/QtGui,sha256=8Sy4LLk27z88naPuG-LjXYBeo7eS27gIuzI7Go6Y5bo,12043332
+cv2/.dylibs/QtTest,sha256=-zykmG9NOueL4-iPa4sFtT123nBpr4tdcCSsKp933oo,187128
+opencv_python-3.3.0.10.dist-info/DESCRIPTION.rst,sha256=XnEO0m5xBjpUOUcadSykKNeIL0hua1dBQ_r1K9ZdKTI,8341
+opencv_python-3.3.0.10.dist-info/METADATA,sha256=PDUr8CBECv6Rx8yW7wCQQHbVb0Elb4pWX2rO7nPMd3I,9426
+opencv_python-3.3.0.10.dist-info/metadata.json,sha256=ZCp2NTeAvfdVUbNb5E-KHkScfZ9tlV7no3Uk5MghDR8,1151
+opencv_python-3.3.0.10.dist-info/RECORD,,
+opencv_python-3.3.0.10.dist-info/top_level.txt,sha256=SY8vrf_sYOg99OP9euhz7q36pPy_2VK5vbeEWXwwSoc,4
+opencv_python-3.3.0.10.dist-info/WHEEL,sha256=sied1txsddvxRnc-lqBF9qM_XFyTHFsxF2jr6Vv0XfA,249
+opencv_python-3.3.0.10.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+cv2/__pycache__/__init__.cpython-36.pyc,,
