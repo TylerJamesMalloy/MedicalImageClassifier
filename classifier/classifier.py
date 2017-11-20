@@ -1,21 +1,36 @@
 import torch
-from torch.utils.serialization import load_lua
-
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-
-transform = transforms.Compose(
-    [transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+import torch.nn as nn
 
 classes = ('Type_1','Type_2','Type_3')
 
-# Iterate through Type 1 image files 
-running_loss = 0.0
+##____________ CLASSIFICATION __________________
 
-feature_list = []
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(-1, 16 * 5 * 5)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+net = Net()
+net.load_state_dict(torch.load('TrainedNN_1000.pt'))
+
+images = []
 target_list = []
 
+# Still need to do post-pre-processing-processing
 for i in range(0,2):
     for filename in glob.iglob("../train/Type_" + str(i + 1) + "/*.jpg"):
         piexif.remove(filename)
@@ -27,28 +42,8 @@ for i in range(0,2):
             continue 
         image = np.array(image)
         image = np.swapaxes(image,0,2)
-        feature_list.append(image)
+        images.append(image)
         target_list.append(i)
-
-feature_array = np.array(feature_list)
-features = torch.from_numpy(feature_array)
-
-target_array = np.array(target_list)
-targets = torch.from_numpy(target_array)
-print(targets.shape)
-
-train = TensorDataset(features, targets)
-trainloader = DataLoader(train, batch_size=50, shuffle=True)
-
-##____________ CLASSIFICATION __________________
-
-net = load_lua('a.t7')
-
-dataiter = iter(trainloader)
-images, labels = dataiter.next()
-
-images = images.float()
-labels = labels.long()
 
 outputs = net(Variable(images))
 
