@@ -23,8 +23,6 @@ for type in enumerate(types):
     type_ids.append(type_i_ids)
     # type_ids.append(type_i_ids[:5])
 
-
-
 def get_filename(image_id, image_type):
     """
     Method to get image file path from its id and type   
