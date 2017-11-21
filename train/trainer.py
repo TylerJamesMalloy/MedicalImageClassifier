@@ -21,7 +21,6 @@ import piexif
 
 start = timeit.default_timer()
 
-"""
 ### 32x32 CNN
 class Net(nn.Module):
     def __init__(self):
@@ -31,7 +30,7 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+        self.fc3 = nn.Linear(84, 3)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
@@ -41,8 +40,8 @@ class Net(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
-"""
 
+"""
 # CNN Model (2 conv layer)
 class Net(nn.Module):
     def __init__(self):
@@ -65,6 +64,7 @@ class Net(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.fc(out)
         return out
+"""
 
 net = Net()
 
@@ -108,8 +108,7 @@ print(targets.shape)
 train = TensorDataset(features, targets)
 trainloader = DataLoader(train, batch_size=50, shuffle=True)
 
-for epoch in range(10):  
-
+for epoch in range(100):  
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs
@@ -137,7 +136,8 @@ for epoch in range(10):
 
 print('Finished Training')
 
-torch.save(net,'TrainedNN_1000.pt')
+torch.save(net.state_dict(), '../classifier/TrainedNN_1000.pth')
+# torch.save(net,'TrainedNN_1000.pt')
 
 stop = timeit.default_timer()
 
