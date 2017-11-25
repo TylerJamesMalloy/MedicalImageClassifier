@@ -12,15 +12,22 @@ from functools import partial
 from subprocess import check_output
 # print(check_output(["ls", "../input"]).decode("utf8"))
 
-TRAIN_DATA = "../input/train"
+DATA_SOURCE = ""
+TRAINING = True 
+
+if(TRAINING): 
+    DATA_SOURCE = "../images/train"
+else: 
+    DATA_SOURCE = "../images/test"
 
 types = ['Type_1','Type_2','Type_3']
 type_ids = []
 
 for type in enumerate(types):
-    type_i_files = glob(os.path.join(TRAIN_DATA, type[1], "*.jpg"))
-    type_i_ids = np.array([s[len(TRAIN_DATA)+8:-4] for s in type_i_files])
+    type_i_files = glob(os.path.join(DATA_SOURCE, type[1], "*.jpg"))
+    type_i_ids = np.array([s[len(DATA_SOURCE)+8:-4] for s in type_i_files])
     type_ids.append(type_i_ids)
+    # Switch with below to only do the first 5 images 
     # type_ids.append(type_i_ids[:5])
 
 def get_filename(image_id, image_type):
@@ -30,7 +37,7 @@ def get_filename(image_id, image_type):
     if image_type == "Type_1" or \
         image_type == "Type_2" or \
         image_type == "Type_3":
-        data_path = os.path.join(TRAIN_DATA, image_type)
+        data_path = os.path.join(DATA_SOURCE, image_type)
     elif image_type == "Test":
         data_path = TEST_DATA
     elif image_type == "AType_1" or \
@@ -250,7 +257,7 @@ def parallelize_image_cropping(image_ids):
             """
             img = img[ret[i][2][1]:ret[i][2][1]+ret[i][2][3],ret[i][2][0]:ret[i][2][0]+ret[i][2][2]]
             # Save image 
-            out_filepath = "../processed_images/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
+            out_filepath = DATA_SOURCE + "/processed_images/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
             cv2.imwrite(out_filepath,cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
 
             if(img.shape[0] > img.shape[1]):
@@ -260,7 +267,7 @@ def parallelize_image_cropping(image_ids):
 
             img = cv2.resize(img, dsize=tile_size)
             # Save image 
-            out_filepath = "../processed_images_32/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
+            out_filepath = DATA_SOURCE + "/processed_images_32/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
             cv2.imwrite(out_filepath,cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
         
         ret = []

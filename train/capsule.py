@@ -2,6 +2,7 @@
 Dynamic Routing Between Capsules
 https://arxiv.org/abs/1710.09829
 """
+import glob
 
 import torch
 import torch.nn as nn
@@ -180,9 +181,12 @@ if __name__ == '__main__':
 
     margin_loss = MarginLoss()
 
+    feature_list = []
+    target_list = []
+
     # post-pre-processing-processing 
     for i in range(0,2):
-        for filename in glob.iglob("../processed_images_32/Type_" + str(i + 1) + "/*.jpg"):
+        for filename in glob.iglob("../images/processed_images_32/Type_" + str(i + 1) + "/*.jpg"):
             piexif.remove(filename)
             image = Image.open(filename)
             # 32x32 now just for testing, need to figure out best dimensions

@@ -21,7 +21,6 @@ import piexif
 
 start = timeit.default_timer()
 
-### 32x32 CNN
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -30,7 +29,7 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 3)
+        self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
@@ -41,32 +40,10 @@ class Net(nn.Module):
         x = self.fc3(x)
         return x
 
-"""
-# CNN Model (2 conv layer)
-class Net(nn.Module):
-    def __init__(self):
-        super(CNN, self).__init__()
-        self.layer1 = nn.Sequential(
-            nn.Conv2d(1, 16, kernel_size=5, padding=2),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(2))
-        self.layer2 = nn.Sequential(
-            nn.Conv2d(16, 32, kernel_size=5, padding=2),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(2))
-        self.fc = nn.Linear(7*7*32, 10)
-        
-    def forward(self, x):
-        out = self.layer1(x)
-        out = self.layer2(out)
-        out = out.view(out.size(0), -1)
-        out = self.fc(out)
-        return out
-"""
 
 net = Net()
+
+# torch.save(net,'UntrainedNN.pt')
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -83,9 +60,8 @@ running_loss = 0.0
 feature_list = []
 target_list = []
 
-# post-pre-processing-processing 
 for i in range(0,2):
-    for filename in glob.iglob("../images/test/processed_images_32/Type_" + str(i + 1) + "/*.jpg"):
+    for filename in glob.iglob("../train/Type_" + str(i + 1) + "/*.jpg"):
         piexif.remove(filename)
         image = Image.open(filename)
         # 32x32 now just for testing, need to figure out best dimensions
@@ -108,7 +84,8 @@ print(targets.shape)
 train = TensorDataset(features, targets)
 trainloader = DataLoader(train, batch_size=50, shuffle=True)
 
-for epoch in range(100):  
+for epoch in range(2):  # loop over the dataset multiple times
+
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs
@@ -136,7 +113,7 @@ for epoch in range(100):
 
 print('Finished Training')
 
-torch.save(net.state_dict(), '../classifier/Neural_Networks/TrainedNN_1000.pth')
+torch.save(net,'256_TrainedNN.pt')
 
 stop = timeit.default_timer()
 
