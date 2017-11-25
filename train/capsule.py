@@ -180,15 +180,36 @@ if __name__ == '__main__':
 
     margin_loss = MarginLoss()
 
-    train_loader = torch.utils.data.DataLoader(
-        MNIST(root='/tmp', download=True, train=True,
-              transform=transforms.ToTensor()),
-        batch_size=8, shuffle=True)
+    # post-pre-processing-processing 
+    for i in range(0,2):
+        for filename in glob.iglob("../processed_images_32/Type_" + str(i + 1) + "/*.jpg"):
+            piexif.remove(filename)
+            image = Image.open(filename)
+            # 32x32 now just for testing, need to figure out best dimensions
+            try:
+                image = scipy.misc.imresize(image, (32, 32))
+            except ValueError:
+                continue 
+            image = np.array(image)
+            image = np.swapaxes(image,0,2)
+            feature_list.append(image)
+            target_list.append(i)
 
+    feature_array = np.array(feature_list)
+    features = torch.from_numpy(feature_array)
+
+    target_array = np.array(target_list)
+    targets = torch.from_numpy(target_array)
+
+    train = TensorDataset(features, targets)
+    train_loader = DataLoader(train, batch_size=50, shuffle=True)
+
+    """
     test_loader = torch.utils.data.DataLoader(
         MNIST(root='/tmp', download=True, train=False,
               transform=transforms.ToTensor()),
         batch_size=8, shuffle=True)
+    """
 
     for e in range(10):
         # Training
