@@ -2,6 +2,9 @@
 Dynamic Routing Between Capsules
 https://arxiv.org/abs/1710.09829
 """
+from PIL import Image
+from torch.autograd import Variable
+
 import glob
 
 import torch
@@ -10,17 +13,27 @@ import torch.optim as optim
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 
+import torchvision
+import torchvision.models as models
+
 import numpy as np
 
 from torch.autograd import Variable
 from torchvision.datasets.mnist import MNIST
 from tqdm import tqdm
 
+from torch.utils.data import Dataset, TensorDataset, DataLoader, ConcatDataset
+
+import scipy.misc
+import timeit
+import piexif
+
 BATCH_SIZE = 100
 NUM_CLASSES = 10
 NUM_EPOCHS = 30
 NUM_ROUTING_ITERATIONS = 3
 
+train_types = ['Type_1','Type_2','Type_3','AType_1','AType_2','AType_3']
 
 def index_to_one_hot(index_tensor, num_classes=10):
     """
@@ -184,6 +197,44 @@ if __name__ == '__main__':
     feature_list = []
     target_list = []
 
+    # Train data post-pre-processing-processing 
+    for type in train_types:
+        feature_id = 0
+        if(type == "Type_1" or type == "AType_1"):
+            feature_id = 1
+        elif(type == "Type_2" or type == "AType_2"): 
+            feature_id = 2
+        elif(type == "Type_3" or type == "AType_3"):
+            feature_id = 3
+        else: 
+            continue
+        
+        image_folder = glob.iglob("../processed_images/Full_Size/" + type + "/*.jpg")
+        image_folder = list(image_folder)[:5]
+
+        for filename in image_folder:
+            piexif.remove(filename)
+            image = Image.open(filename)
+            image = np.array(image)
+             # 32x32 now just for testing, need to figure out best dimensions
+            try:
+                image = scipy.misc.imresize(image, (256, 256))
+            except ValueError:
+                continue 
+            # image = np.swapaxes(image,0,2)
+            feature_list.append(image)
+            target_list.append(feature_id)
+
+    feature_array = np.array(feature_list)
+    features = torch.from_numpy(feature_array)
+
+    target_array = np.array(target_list)
+    targets = torch.from_numpy(target_array)
+
+    train = TensorDataset(features, targets)
+    train_loader = DataLoader(train, batch_size=50, shuffle=True)
+
+    """
     # post-pre-processing-processing 
     for i in range(0,2):
         for filename in glob.iglob("../images/processed_images_32/Type_" + str(i + 1) + "/*.jpg"):
@@ -199,30 +250,21 @@ if __name__ == '__main__':
             feature_list.append(image)
             target_list.append(i)
 
-    feature_array = np.array(feature_list)
-    features = torch.from_numpy(feature_array)
+    test_target_array = np.array(target_list)
+    test_targets = torch.from_numpy(test_target_array)
 
-    target_array = np.array(target_list)
-    targets = torch.from_numpy(target_array)
-
-    train = TensorDataset(features, targets)
-    train_loader = DataLoader(train, batch_size=50, shuffle=True)
-
-    """
-    test_loader = torch.utils.data.DataLoader(
-        MNIST(root='/tmp', download=True, train=False,
-              transform=transforms.ToTensor()),
-        batch_size=8, shuffle=True)
+    test = TensorDataset(test_targets)
+    test_loader = DataLoader(train, batch_size=50, shuffle=True)
     """
 
-    for e in range(10):
+    for e in range(1):
         # Training
         train_loss = 0
 
         model.train()
         for idx, (img, target) in enumerate(tqdm(train_loader, desc='Training')):
-            img = Variable(img)
-            target = Variable(index_to_one_hot(target))
+            img = Variable(img.type(torch.FloatTensor))
+            target = Variable(index_to_one_hot(target.type(torch.FloatTensor)))
 
             if CUDA:
                 img = img.cuda()
@@ -242,6 +284,7 @@ if __name__ == '__main__':
 
         print('Training:, Avg Loss: {:.4f}'.format(train_loss))
 
+        """
         # # Testing
         correct = 0
         test_loss = 0
@@ -268,3 +311,7 @@ if __name__ == '__main__':
         correct = 100. * correct / len(test_loader.dataset)
         print('Test Set: Avg Loss: {:.4f}, Accuracy: {:.4f}'.format(
             test_loss[0], correct))
+        """
+    
+    print('Finished Training')
+    torch.save(model.state_dict(), '../classifier/Neural_Networks/Capsule_Network.pth')

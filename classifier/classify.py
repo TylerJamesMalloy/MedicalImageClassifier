@@ -75,7 +75,7 @@ transform = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-classes = ('Type_1','Type_2','Type_3')
+classes = ('Test')
 
 # Iterate through Type 1 image files 
 running_loss = 0.0
@@ -83,9 +83,9 @@ running_loss = 0.0
 feature_list = []
 target_list = []
 
-# post-pre-processing-processing 
-for i in range(0,2):
-    for filename in glob.iglob("../processed_images_32/Type_" + str(i + 1) + "/*.jpg"):
+for type in classes:
+    image_folder = glob.iglob("../processed_images/Full_Size/" + type + "/*.jpg")
+    for filename in image_folder:
         piexif.remove(filename)
         image = Image.open(filename)
         # 32x32 now just for testing, need to figure out best dimensions
@@ -110,7 +110,7 @@ trainloader = DataLoader(train, batch_size=targets.shape[0], shuffle=False)
 
 
 net = Net()
-net.load_state_dict(torch.load('Neural_Networks/TrainedNN_1000.pth'))
+net.load_state_dict(torch.load('Neural_Networks/Traditional_CNN.pth'))
 
 error = 0.0
 running_loss = 0.0
