@@ -88,13 +88,8 @@ for type in classes:
     for filename in image_folder:
         piexif.remove(filename)
         image = Image.open(filename)
-        # 32x32 now just for testing, need to figure out best dimensions
-        try:
-            image = scipy.misc.imresize(image, (32, 32))
-        except ValueError:
-            continue 
         image = np.array(image)
-        image = np.swapaxes(image,0,2)
+        # image = np.swapaxes(image,0,2)
         feature_list.append(image)
         target_list.append(i)
 

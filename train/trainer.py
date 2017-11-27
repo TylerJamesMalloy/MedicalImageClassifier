@@ -43,20 +43,21 @@ class Net(nn.Module):
         return x
 """
 
+# 256x256 CNN
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(3, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc1 = nn.Linear(480, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 3)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
+        x = x.view(-1, 480)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
@@ -98,7 +99,6 @@ for type in classes:
     for filename in image_folder:
         piexif.remove(filename)
         image = Image.open(filename)
-        # 32x32 now just for testing, need to figure out best dimensions
         try:
             image = scipy.misc.imresize(image, (256, 256))
         except ValueError:
@@ -135,6 +135,10 @@ for epoch in range(100):
 
         # forward + backward + optimize
         outputs = net(inputs.float())
+
+        print(outputs)
+        print(labels)
+
         loss = criterion(outputs, labels)
 
         loss.backward()
