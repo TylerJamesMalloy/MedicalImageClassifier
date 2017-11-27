@@ -12,23 +12,33 @@ from functools import partial
 from subprocess import check_output
 # print(check_output(["ls", "../input"]).decode("utf8"))
 
-DATA_SOURCE = ""
-TRAINING = True 
+TEST_DATA = "../images/test"
+DATA_SOURCE = "../images/train"
+ADDITIONAL_DATA = "../images/additional"
+    
 
-if(TRAINING): 
-    DATA_SOURCE = "../images/train"
-else: 
-    DATA_SOURCE = "../images/test"
-
-types = ['Type_1','Type_2','Type_3']
+types = ['AType_1','AType_2','AType_3','Test']
 type_ids = []
 
 for type in enumerate(types):
-    type_i_files = glob(os.path.join(DATA_SOURCE, type[1], "*.jpg"))
-    type_i_ids = np.array([s[len(DATA_SOURCE)+8:-4] for s in type_i_files])
-    type_ids.append(type_i_ids)
-    # Switch with below to only do the first 5 images 
-    # type_ids.append(type_i_ids[:5])
+    if type[1] == "Type_1" or \
+        type[1] == "Type_2" or \
+        type[1] == "Type_3":
+        type_i_files = glob(os.path.join(DATA_SOURCE, type[1], "*.jpg"))
+        type_i_ids = np.array([s[len(DATA_SOURCE)+8:-4] for s in type_i_files])
+        type_ids.append(type_i_ids)
+    elif type[1] == "Test":
+        type_i_files = glob(os.path.join(TEST_DATA, type[1], "*.jpg"))
+        type_i_ids = np.array([s[len(TEST_DATA)+8:-3] for s in type_i_files])
+        type_ids.append(type_i_ids)
+    elif type[1] == "AType_1" or \
+          type[1] == "AType_2" or \
+          type[1] == "AType_3":
+        type_i_files = glob(os.path.join(ADDITIONAL_DATA, type[1], "*.jpg"))
+        type_i_ids = np.array([s[len(ADDITIONAL_DATA)+9:-4] for s in type_i_files])
+        type_ids.append(type_i_ids)
+    else:
+        raise Exception("Image type '%s' is not recognized" % image_type)
 
 def get_filename(image_id, image_type):
     """
@@ -257,7 +267,8 @@ def parallelize_image_cropping(image_ids):
             """
             img = img[ret[i][2][1]:ret[i][2][1]+ret[i][2][3],ret[i][2][0]:ret[i][2][0]+ret[i][2][2]]
             # Save image 
-            out_filepath = DATA_SOURCE + "/processed_images/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
+            out_filepath =  "../processed_images/Full_Size/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
+            print(out_filepath)
             cv2.imwrite(out_filepath,cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
 
             if(img.shape[0] > img.shape[1]):
@@ -267,7 +278,7 @@ def parallelize_image_cropping(image_ids):
 
             img = cv2.resize(img, dsize=tile_size)
             # Save image 
-            out_filepath = DATA_SOURCE + "/processed_images_32/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
+            out_filepath =  "../processed_images/32x32/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
             cv2.imwrite(out_filepath,cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
         
         ret = []
