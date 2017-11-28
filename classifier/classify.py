@@ -63,6 +63,7 @@ class Net(nn.Module):
         out = self.layer2(out)
         out = out.view(out.size(0), -1)
         out = self.fc(out)
+        return out
 
 net = Net()
 
@@ -82,10 +83,11 @@ feature_list = []
 target_list = []
 
 image_folder = glob.iglob("../processed_images/Full_Size/Test/*.jpg")
-image_folder = list(image_folder)[:5]
-print(image_folder)
+image_folder = list(image_folder)
 
-target_test = [2,2,2,1,2,2,1,2,2,2,2,3,3,3,2,1,3,3,2,2,2,2,3,2,2,2,2,3,1,3,2,2,2,2,2,3,2,3,3,3,2,2,2,2,2,2,2,2,3,1,3,2,3,2,2,2,3,3,1,3,2,3,1,3,2,3,3,2,1,1,2,2,2,2,1,1,3,1,2,2,2,3,2,1,2,3,2,2,3,2,2,3,1,3,2,3,3,2,2,2,3,3,2,2,3,1,2,1,1,2,3,3,1,1,2,2,2,2,2,3,2,3,3,3,2,3,2,2,3,2,2,2,2,2,2,2,2,3,3,3,3,2,2,2,2,2,1,2,1,1,2,3,2,2,2,3,2,2,3,2,2,2,3,2,2,2,1,1,1,2,1,3,3,3,2,3,2,3,3,2,1,3,2,2,1,3,3,2,1,2,3,3,2,3,3,2,3,2,2,3,3,2,2,2,2,3,3,2,2,3,3,1,3,2,2,2,1,3,2,2,2,3,1,3,1,2,3,2,1,1,2,3,3,1,3,2,3,3,1,2,2,2,1,1,2,2,2,2,2,2,3,2,3,3,2,3,3,1,1,1,2,3,3,3,1,2,2,3,2,2,2,1,3,1,1,2,2,2,2,3,2,2,2,3,2,1,1,2,2,3,2,2,2,2,2,3,2,3,1,2,2,2,2,1,3,3,2,2,3,1,2,3,2,3,2,1,2,2,2,3,3,2,2,1,2,2,2,3,2,1,2,2,2,2,3,3,3,3,1,2,2,2,1,2,2,3,2,3,2,3,2,3,1,1,2,3,1,2,2,2,3,3,2,3,3,2,3,3,2,1,1,3,3,2,3,2,2,2,2,1,3,2,2,2,2,1,2,2,2,1,3,3,2,3,1,2,3,2,1,1,2,1,1,2,2,3,2,2,2,1,2,3,1,2,2,1,2,2,2,2,1,2,3,3,3,3,1,2,3,3,2,2,2,1,3,2,3,2,1,2,2,3,2,2,3,2,3,2,2,3,2,3,2,2,2,2,2,1,2,3,3,1,3,3,2,2,2,1,2,3,2,3,2,2,1,3,3,3,3,2,1,2,2,1,3,1,3,2,3,1,2,2,2,2,3,1,2,3,3,2,3,2,1,2,3,2,2,2,1,3,2,3]
+target_test = [2,2,1,3,3,2,2,2,2,2,2,3,2,3,2,3,1,2,2,3,1,2,2,1,2,1,2,3,2,3,1,2,2,1,2,3,2,2,2,1,3,2,2,2,1,3,1,1,3,3,3,1,3,1,3,3,2,2,2,1,3,2,3,2,2,1,3,3,3,3,1,2,2,1,3,1,3,2,3,1,2,2,2,3,1,2,3,3,2,3,1,2,3,2,2,2,1,3,2,3,1,2,2,1,2,2,2,2,3,3,2,1,3,3,2,2,2,2,3,2,2,2,3,1,3,2,2,2,2,2,2,3,3,3,2,2,2,2,2,2,2,3,1,3,2,3,2,2,2,3,1,3,2,3,1,3,2,3,3,2,1,2,2,2,2,1,1,3,1,2,2,3,2,1,2,3,2,2,3,2,3,1,3,2,3,3,2,2,2,3,2,2,3,1,2,1,1,2,3,3,2,2,2,2,2,3,2,3,3,3,3,2,2,3,2,2,2,2,2,2,2,3,3,3,3,2,2,2,2,2,2,1,1,2,3,2,2,2,3,2,3,2,2,2,3,2,2,2,1,1,2,1,3,3,3,2,3,2,3,3,1,3,2,2,1,3,3,2,1,2,3,2,3,3,2,3,2,2,3,3,2,2,2,3,3,2,2,3,3,1,2,2,2,1,3,2,2,2,3,1,2,3,2,1,1,2,3,3,1,3,3,3,1,2,2,2,1,1,2,2,2,2,2,3,2,3,3,2,3,3,1,1,2,3,3,3,1,2,2,3,2,2,1,3,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,3,2,2,2,2,3,2,3,1,2,2,2,1,3,3,2,2,3,1,2,3,3,2,1,2,2,2,3,3,2,2,2,2,2,3,2,1,2,2,2,2,3,3,1,2,2,2,1,2,2,3,3,2,3,2,3,1,1,2,3,1,2,2,3,3,2,3,3,2,3,3,1,1,3,3,2,3,2,2,2,2,3,2,2,2,2,1,2,2,2,1,3,2,3,1,2,3,2,1,1,2,1,2,2,3,2,2,2,1,2,3,2,2,1,2,2,2,2,1,2,3,3,3,1,2,3,3,2,2,2,1,2,3,2,1,2,2,3,2,2,3,2,2,3,2,3,2,2,2,2,2,2,3]
+
+image_folder = sorted(image_folder, key = lambda x:int(x[int(len("../processed_images/Full_Size/Test/")):-8]))
 
 for file_index, filename in enumerate(image_folder):
     piexif.remove(filename)
@@ -102,12 +104,29 @@ for file_index, filename in enumerate(image_folder):
 feature_array = np.array(feature_list)
 features = torch.from_numpy(feature_array)
 
+output_votes = np.zeros((10, len(features)))
+for test_index in range(10):
+    for i in range(0,len(features)):
+        output = net(Variable(features[i:i+1]).float())
+        numpyout = output.data.numpy()
+        outlist = numpyout[0].tolist()
+        output = outlist.index(max(outlist))
+        output_votes[test_index,i] = output
+
+print(output_votes)
+
+"""
+
+correct = 0 
+total = 0 
+print(correct/total)
+
 target_array = np.array(target_list)
 targets = torch.from_numpy(target_array)
 targets = targets
 
 train = TensorDataset(features, targets)
-trainloader = DataLoader(train, batch_size=targets.shape[0], shuffle=False)
+trainloader = DataLoader(train, batch_size=10, shuffle=False)
 
 net = Net()
 net.load_state_dict(torch.load('Neural_Networks/Full_Traditional_CNN.pth'))
@@ -115,6 +134,7 @@ net.load_state_dict(torch.load('Neural_Networks/Full_Traditional_CNN.pth'))
 error = 0.0
 running_loss = 0.0
 running_total = 0.0
+
 for i, data in enumerate(trainloader, 0):
     # get the inputs
     inputs, labels = data
@@ -123,15 +143,23 @@ for i, data in enumerate(trainloader, 0):
     inputs, labels = Variable(inputs), Variable(labels)
     labels = labels.long()
     inputs = inputs.float()
-    numpyout = net(inputs).data.numpy()
+    outputs = net(inputs)
+    print(outputs)
+
+    numpyout = outputs.data.numpy()
     outputs = np.zeros(numpyout.shape[0])
+    
     for i in range(labels.size()[0]):
         outlist = numpyout[i].tolist()
         outputs[i] = outlist.index(max(outlist))
 
     inputs = labels.data.numpy()
+    print(inputs)
+    print(outputs)
+
     running_loss += sum(abs(inputs - outputs))
     running_total += numpyout.shape[0]
 
 error = running_loss / running_total
 print(error)
+"""
