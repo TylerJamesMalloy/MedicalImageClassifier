@@ -44,24 +44,28 @@ class Net(nn.Module):
 """
 
 # 256x256 CNN
+# CNN Model (2 conv layer)
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 16)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 16)
-        self.fc1 = nn.Linear(480, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 3)
-
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(3, 16, kernel_size=5, padding=2),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(16, 32, kernel_size=5, padding=2),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.fc = nn.Linear(131072, 3)
+        
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 480)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
+        out = self.layer1(x)
+        out = self.layer2(out)
+        out = out.view(out.size(0), -1)
+        out = self.fc(out)
+        return out
 
 net = Net()
 
@@ -94,7 +98,7 @@ for type in classes:
         continue
 
     image_folder = glob.iglob("../processed_images/Full_Size/" + type + "/*.jpg")
-    image_folder = list(image_folder)[:5]
+    # image_folder = list(image_folder)[:5]
 
     for filename in image_folder:
         piexif.remove(filename)
@@ -136,8 +140,8 @@ for epoch in range(100):
         # forward + backward + optimize
         outputs = net(inputs.float())
 
-        print(outputs)
-        print(labels)
+        # print(outputs)
+        # print(labels)
 
         loss = criterion(outputs, labels)
 
