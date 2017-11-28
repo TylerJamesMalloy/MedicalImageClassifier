@@ -98,7 +98,6 @@ for type in classes:
         continue
 
     image_folder = glob.iglob("../processed_images/Full_Size/" + type + "/*.jpg")
-    # image_folder = list(image_folder)[:5]
 
     for filename in image_folder:
         piexif.remove(filename)
@@ -112,18 +111,17 @@ for type in classes:
         feature_list.append(image)
         target_list.append(feature_id)
         
-
 feature_array = np.array(feature_list)
 features = torch.from_numpy(feature_array)
 
 target_array = np.array(target_list)
 targets = torch.from_numpy(target_array)
-print(targets.shape)
 
 train = TensorDataset(features, targets)
-trainloader = DataLoader(train, batch_size=50, shuffle=True)
+trainloader = DataLoader(train, batch_size=len(feature_list), shuffle=False)
 
-for epoch in range(100):  
+# We are just training on one iteration of the full data set (see batch_size).
+for epoch in range(1):  
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs
