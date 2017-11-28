@@ -25,29 +25,30 @@ start = timeit.default_timer()
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv1 = nn.Conv2d(3, 64, 5)
         self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.conv2 = nn.Conv2d(64, 16, 5)
+        self.fc1 = nn.Linear(480, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 3)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
+        x = x.view(-1, 480)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
 
 """
+# 256x256 CNN
 # CNN Model (2 conv layer)
 class Net(nn.Module):
     def __init__(self):
-        super(CNN, self).__init__()
+        super(Net, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(1, 16, kernel_size=5, padding=2),
+            nn.Conv2d(3, 16, kernel_size=5, padding=2),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(2))
@@ -56,7 +57,7 @@ class Net(nn.Module):
             nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d(2))
-        self.fc = nn.Linear(7*7*32, 10)
+        self.fc = nn.Linear(131072, 3)
         
     def forward(self, x):
         out = self.layer1(x)
@@ -83,15 +84,23 @@ running_loss = 0.0
 feature_list = []
 target_list = []
 
-for type in classes:
-    image_folder = glob.iglob("../processed_images/Full_Size/" + type + "/*.jpg")
-    for filename in image_folder:
-        piexif.remove(filename)
-        image = Image.open(filename)
-        image = np.array(image)
-        # image = np.swapaxes(image,0,2)
-        feature_list.append(image)
-        target_list.append(i)
+image_folder = glob.iglob("../processed_images/Full_Size/Test/*.jpg")
+image_folder = list(image_folder)[:5]
+print(image_folder)
+
+target_test = [2,2,2,1,2,2,1,2,2,2,2,3,3,3,2,1,3,3,2,2,2,2,3,2,2,2,2,3,1,3,2,2,2,2,2,3,2,3,3,3,2,2,2,2,2,2,2,2,3,1,3,2,3,2,2,2,3,3,1,3,2,3,1,3,2,3,3,2,1,1,2,2,2,2,1,1,3,1,2,2,2,3,2,1,2,3,2,2,3,2,2,3,1,3,2,3,3,2,2,2,3,3,2,2,3,1,2,1,1,2,3,3,1,1,2,2,2,2,2,3,2,3,3,3,2,3,2,2,3,2,2,2,2,2,2,2,2,3,3,3,3,2,2,2,2,2,1,2,1,1,2,3,2,2,2,3,2,2,3,2,2,2,3,2,2,2,1,1,1,2,1,3,3,3,2,3,2,3,3,2,1,3,2,2,1,3,3,2,1,2,3,3,2,3,3,2,3,2,2,3,3,2,2,2,2,3,3,2,2,3,3,1,3,2,2,2,1,3,2,2,2,3,1,3,1,2,3,2,1,1,2,3,3,1,3,2,3,3,1,2,2,2,1,1,2,2,2,2,2,2,3,2,3,3,2,3,3,1,1,1,2,3,3,3,1,2,2,3,2,2,2,1,3,1,1,2,2,2,2,3,2,2,2,3,2,1,1,2,2,3,2,2,2,2,2,3,2,3,1,2,2,2,2,1,3,3,2,2,3,1,2,3,2,3,2,1,2,2,2,3,3,2,2,1,2,2,2,3,2,1,2,2,2,2,3,3,3,3,1,2,2,2,1,2,2,3,2,3,2,3,2,3,1,1,2,3,1,2,2,2,3,3,2,3,3,2,3,3,2,1,1,3,3,2,3,2,2,2,2,1,3,2,2,2,2,1,2,2,2,1,3,3,2,3,1,2,3,2,1,1,2,1,1,2,2,3,2,2,2,1,2,3,1,2,2,1,2,2,2,2,1,2,3,3,3,3,1,2,3,3,2,2,2,1,3,2,3,2,1,2,2,3,2,2,3,2,3,2,2,3,2,3,2,2,2,2,2,1,2,3,3,1,3,3,2,2,2,1,2,3,2,3,2,2,1,3,3,3,3,2,1,2,2,1,3,1,3,2,3,1,2,2,2,2,3,1,2,3,3,2,3,2,1,2,3,2,2,2,1,3,2,3]
+
+for file_index, filename in enumerate(image_folder):
+    piexif.remove(filename)
+    image = Image.open(filename)
+    try:
+        image = scipy.misc.imresize(image, (256, 256))
+    except ValueError:
+        continue 
+    image = np.array(image)
+    image = np.swapaxes(image,0,2)
+    feature_list.append(image)
+    target_list.append(target_test[file_index])
 
 feature_array = np.array(feature_list)
 features = torch.from_numpy(feature_array)
@@ -102,7 +111,6 @@ targets = targets
 
 train = TensorDataset(features, targets)
 trainloader = DataLoader(train, batch_size=targets.shape[0], shuffle=False)
-
 
 net = Net()
 net.load_state_dict(torch.load('Neural_Networks/Traditional_CNN.pth'))

@@ -234,28 +234,25 @@ if __name__ == '__main__':
     train = TensorDataset(features, targets)
     train_loader = DataLoader(train, batch_size=50, shuffle=True)
 
-    """
     # post-pre-processing-processing 
-    for i in range(0,2):
-        for filename in glob.iglob("../images/processed_images_32/Type_" + str(i + 1) + "/*.jpg"):
-            piexif.remove(filename)
-            image = Image.open(filename)
-            # 32x32 now just for testing, need to figure out best dimensions
-            try:
-                image = scipy.misc.imresize(image, (32, 32))
-            except ValueError:
-                continue 
-            image = np.array(image)
-            image = np.swapaxes(image,0,2)
-            feature_list.append(image)
-            target_list.append(i)
+    for filename in glob.iglob("../processed_images/Full_Size/Test/*.jpg"):
+        piexif.remove(filename)
+        image = Image.open(filename)
+        # 32x32 now just for testing, need to figure out best dimensions
+        try:
+            image = scipy.misc.imresize(image, (256, 256))
+        except ValueError:
+            continue 
+        image = np.array(image)
+        # image = np.swapaxes(image,0,2)
+        feature_list.append(image)
+        target_list.append(i)
 
     test_target_array = np.array(target_list)
     test_targets = torch.from_numpy(test_target_array)
 
     test = TensorDataset(test_targets)
     test_loader = DataLoader(train, batch_size=50, shuffle=True)
-    """
 
     for e in range(1):
         # Training
@@ -284,7 +281,6 @@ if __name__ == '__main__':
 
         print('Training:, Avg Loss: {:.4f}'.format(train_loss))
 
-        """
         # # Testing
         correct = 0
         test_loss = 0
@@ -311,7 +307,6 @@ if __name__ == '__main__':
         correct = 100. * correct / len(test_loader.dataset)
         print('Test Set: Avg Loss: {:.4f}, Accuracy: {:.4f}'.format(
             test_loss[0], correct))
-        """
     
     print('Finished Training')
     torch.save(model.state_dict(), '../classifier/Neural_Networks/Capsule_Network.pth')

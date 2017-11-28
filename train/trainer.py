@@ -32,7 +32,7 @@ class Net(nn.Module):
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 3)
-
+        
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
@@ -118,10 +118,9 @@ target_array = np.array(target_list)
 targets = torch.from_numpy(target_array)
 
 train = TensorDataset(features, targets)
-trainloader = DataLoader(train, batch_size=len(feature_list), shuffle=False)
+trainloader = DataLoader(train, batch_size=50, shuffle=False)
 
-# We are just training on one iteration of the full data set (see batch_size).
-for epoch in range(1):  
+for epoch in range(3):  
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs
@@ -148,9 +147,9 @@ for epoch in range(1):
 
         # print statistics
         running_loss += loss.data[0]
-        if i % 2000 == 1999:    # print every 2000 mini-batches
+        if i % 200 == 199:    # print every 200 mini-batches
             print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / 2000))
+                  (epoch + 1, i + 1, running_loss / 200))
             running_loss = 0.0
 
 print('Finished Training')

@@ -12,12 +12,12 @@ from functools import partial
 from subprocess import check_output
 # print(check_output(["ls", "../input"]).decode("utf8"))
 
-TEST_DATA = "../images/test"
+TEST_DATA = "../images"
 DATA_SOURCE = "../images/train"
 ADDITIONAL_DATA = "../images/additional"
     
 
-types = ['AType_1','AType_2','AType_3','Test']
+types = ['test']
 type_ids = []
 
 for type in enumerate(types):
@@ -27,9 +27,9 @@ for type in enumerate(types):
         type_i_files = glob(os.path.join(DATA_SOURCE, type[1], "*.jpg"))
         type_i_ids = np.array([s[len(DATA_SOURCE)+8:-4] for s in type_i_files])
         type_ids.append(type_i_ids)
-    elif type[1] == "Test":
+    elif type[1] == "test":
         type_i_files = glob(os.path.join(TEST_DATA, type[1], "*.jpg"))
-        type_i_ids = np.array([s[len(TEST_DATA)+8:-3] for s in type_i_files])
+        type_i_ids = np.array([s[len(TEST_DATA)+6:-4] for s in type_i_files])
         type_ids.append(type_i_ids)
     elif type[1] == "AType_1" or \
           type[1] == "AType_2" or \
@@ -48,8 +48,8 @@ def get_filename(image_id, image_type):
         image_type == "Type_2" or \
         image_type == "Type_3":
         data_path = os.path.join(DATA_SOURCE, image_type)
-    elif image_type == "Test":
-        data_path = TEST_DATA
+    elif image_type == "test":
+        data_path = os.path.join(TEST_DATA, image_type)
     elif image_type == "AType_1" or \
           image_type == "AType_2" or \
           image_type == "AType_3":
