@@ -21,25 +21,28 @@ import piexif
 
 start = timeit.default_timer()
 
-"""### 32x32 CNN
+"""
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, 5)
+        self.conv1 = nn.Conv2d(3, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(64, 16, 5)
-        self.fc1 = nn.Linear(480, 120)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 3)
+        self.fc3 = nn.Linear(84, 10)
+        self.fc4 = nn.Linear(10, 3)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 480)
+        x = x.view(-1, 16 * 5 * 5)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x"""
+        x = F.relu(self.fc3(x))
+        x = self.fc4(x)
+        return x
+"""
 
 # 256x256 CNN
 # CNN Model (2 conv layer)
@@ -66,6 +69,7 @@ class Net(nn.Module):
         return out
 
 net = Net()
+net.load_state_dict(torch.load('Neural_Networks/32_Traditional_CNN.pth'))
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -93,7 +97,7 @@ for file_index, filename in enumerate(image_folder):
     piexif.remove(filename)
     image = Image.open(filename)
     try:
-        image = scipy.misc.imresize(image, (256, 256))
+        image = scipy.misc.imresize(image, (32, 32))
     except ValueError:
         continue 
     image = np.array(image)
@@ -104,19 +108,28 @@ for file_index, filename in enumerate(image_folder):
 feature_array = np.array(feature_list)
 features = torch.from_numpy(feature_array)
 
-output_votes = np.zeros((10, len(features)))
-for test_index in range(10):
-    for i in range(0,len(features)):
-        output = net(Variable(features[i:i+1]).float())
-        numpyout = output.data.numpy()
-        outlist = numpyout[0].tolist()
-        output = outlist.index(max(outlist))
-        output_votes[test_index,i] = output
+# len(features)
+correct = 0
+total = 0 
 
-print(output_votes)
+outputs = np.zeros(len(features))
+
+for i in range(0,len(features)):
+    torch.manual_seed(i)
+    output = net(Variable(features[i:i+1]).float())
+    _, predicted = torch.max(output.data, 1)
+    ground = target_test[i]
+    
+    outputs[i] = predicted[0] + 1
+
+    if(predicted[0] + 1 == ground):
+        correct += 1
+    total += 1
+
+print(outputs)
+print(correct/total)
 
 """
-
 correct = 0 
 total = 0 
 print(correct/total)

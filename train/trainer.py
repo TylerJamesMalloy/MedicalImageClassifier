@@ -31,15 +31,17 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 3)
-        
+        self.fc3 = nn.Linear(84, 10)
+        self.fc4 = nn.Linear(10, 3)
+
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = x.view(-1, 16 * 5 * 5)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = self.fc3(x)
+        x = F.relu(self.fc3(x))
+        x = self.fc4(x)
         return x
 """
 
@@ -110,7 +112,7 @@ for type in classes:
         image = np.swapaxes(image,0,2)
         feature_list.append(image)
         target_list.append(feature_id)
-        
+
 feature_array = np.array(feature_list)
 features = torch.from_numpy(feature_array)
 
@@ -118,9 +120,9 @@ target_array = np.array(target_list)
 targets = torch.from_numpy(target_array)
 
 train = TensorDataset(features, targets)
-trainloader = DataLoader(train, batch_size=50, shuffle=False)
+trainloader = DataLoader(train, batch_size=4, shuffle=True, num_workers=2)
 
-for epoch in range(3):  
+for epoch in range(17):  
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs
@@ -154,7 +156,7 @@ for epoch in range(3):
 
 print('Finished Training')
 
-torch.save(net.state_dict(), '../classifier/Neural_Networks/Full_Traditional_CNN.pth')
+torch.save(net.state_dict(), '../classifier/Neural_Networks/32_Traditional_CNN.pth')
 
 stop = timeit.default_timer()
 

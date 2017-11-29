@@ -29,13 +29,13 @@ import timeit
 import piexif
 
 BATCH_SIZE = 100
-NUM_CLASSES = 10
+NUM_CLASSES = 3
 NUM_EPOCHS = 30
 NUM_ROUTING_ITERATIONS = 3
 
 train_types = ['Type_1','Type_2','Type_3','AType_1','AType_2','AType_3']
 
-def index_to_one_hot(index_tensor, num_classes=10):
+def index_to_one_hot(index_tensor, num_classes=3):
     """
     Converts index value to one hot vector.
     e.g. [2, 5] (with 10 classes) becomes:
@@ -44,7 +44,7 @@ def index_to_one_hot(index_tensor, num_classes=10):
             [0 0 0 0 1 0 0 0 0 0]
         ]
     """
-    index_tensor = index_tensor.long()
+    index_tensor = index_tensor.long() - 1
     return torch.eye(num_classes).index_select(dim=0, index=index_tensor)
 
 
@@ -149,11 +149,11 @@ class CapsuleNet(nn.Module):
         self.primary_capsules = CapsuleLayer(
             8, -1, 256, 32, kernel_size=9, stride=2)
 
-        # 10 is the number of classes
-        self.digit_capsules = CapsuleLayer(10, 32 * 6 * 6, 8, 16)
+        # 3 is the number of classes
+        self.digit_capsules = CapsuleLayer(3, 32 * 6 * 6, 8, 16)
 
         self.decoder = nn.Sequential(
-            nn.Linear(16 * 10, 512),
+            nn.Linear(16 * 3, 512),
             nn.ReLU(inplace=True),
             nn.Linear(512, 1024),
             nn.ReLU(inplace=True),
@@ -172,7 +172,7 @@ class CapsuleNet(nn.Module):
         if y is None:
             # In all batches, get the most active capsule
             _, max_length_indices = classes.max(dim=1)
-            y = Variable(torch.eye(10)).index_select(
+            y = Variable(torch.eye(3)).index_select(
                 dim=0, index=max_length_indices.data)
 
         reconstructions = self.decoder((x * y[:, :, None]).view(x.size(0), -1))
@@ -210,7 +210,8 @@ if __name__ == '__main__':
             continue
         
         image_folder = glob.iglob("../processed_images/Full_Size/" + type + "/*.jpg")
-        image_folder = list(image_folder)[:5]
+        image_folder = list(image_folder)
+        image_folder = image_folder[:5]
 
         for filename in image_folder:
             piexif.remove(filename)
@@ -218,7 +219,7 @@ if __name__ == '__main__':
             image = np.array(image)
              # 32x32 now just for testing, need to figure out best dimensions
             try:
-                image = scipy.misc.imresize(image, (256, 256))
+                image = scipy.misc.imresize(image, (28, 28))
             except ValueError:
                 continue 
             # image = np.swapaxes(image,0,2)
@@ -242,7 +243,7 @@ if __name__ == '__main__':
         image = Image.open(filename)
         # 32x32 now just for testing, need to figure out best dimensions
         try:
-            image = scipy.misc.imresize(image, (256, 256))
+            image = scipy.misc.imresize(image, (28, 28))
         except ValueError:
             continue 
         image = np.array(image)
@@ -267,6 +268,7 @@ if __name__ == '__main__':
         model.train()
         for idx, (img, target) in enumerate(tqdm(train_loader, desc='Training')):
             img = Variable(img.type(torch.FloatTensor))
+            # print(target.type(torch.FloatTensor))
             target = Variable(index_to_one_hot(target.type(torch.FloatTensor)))
 
             if CUDA:
@@ -287,6 +289,7 @@ if __name__ == '__main__':
 
         print('Training:, Avg Loss: {:.4f}'.format(train_loss))
 
+        
         # # Testing
         correct = 0
         test_loss = 0
@@ -313,6 +316,6 @@ if __name__ == '__main__':
         correct = 100. * correct / len(test_loader.dataset)
         print('Test Set: Avg Loss: {:.4f}, Accuracy: {:.4f}'.format(
             test_loss[0], correct))
-    
+
     print('Finished Training')
     torch.save(model.state_dict(), '../classifier/Neural_Networks/Capsule_Network.pth')
