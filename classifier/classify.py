@@ -69,7 +69,7 @@ class Net(nn.Module):
         return out
 
 net = Net()
-net.load_state_dict(torch.load('Neural_Networks/32_Traditional_CNN.pth'))
+net.load_state_dict(torch.load('Neural_Networks/Deep_CNN.pth'))
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -97,13 +97,14 @@ for file_index, filename in enumerate(image_folder):
     piexif.remove(filename)
     image = Image.open(filename)
     try:
-        image = scipy.misc.imresize(image, (32, 32))
+        image = scipy.misc.imresize(image, (256, 256))
     except ValueError:
         continue 
     image = np.array(image)
     image = np.swapaxes(image,0,2)
     feature_list.append(image)
     target_list.append(target_test[file_index])
+    print(image_folder[file_index])
 
 feature_array = np.array(feature_list)
 features = torch.from_numpy(feature_array)
