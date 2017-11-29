@@ -99,7 +99,7 @@ targets = torch.from_numpy(target_array)
 train = TensorDataset(features, targets)
 trainloader = DataLoader(train, batch_size=4, shuffle=True, num_workers=2)
 
-for epoch in range(17):  
+for epoch in range(100):  
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs
@@ -133,7 +133,7 @@ for epoch in range(17):
 
 print('Finished Training')
 
-torch.save(net.state_dict(), '../classifier/Neural_Networks/Deep_CNN_NoA.pth')
+torch.save(net.state_dict(), '../classifier/Neural_Networks/Deep_CNN_NoA_100e.pth')
 
 stop = timeit.default_timer()
 
