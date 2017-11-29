@@ -78,7 +78,8 @@ transform = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-classes = ('Type_1','Type_2','Type_3','AType_1','AType_2','AType_3')
+classes = ('Type_1','Type_2','Type_3')
+# 'AType_1','AType_2','AType_3'
 
 # Iterate through Type 1 image files 
 running_loss = 0.0
@@ -156,7 +157,7 @@ for epoch in range(17):
 
 print('Finished Training')
 
-torch.save(net.state_dict(), '../classifier/Neural_Networks/32_Traditional_CNN.pth')
+torch.save(net.state_dict(), '../classifier/Neural_Networks/NoAdditionalImages_Traditional_CNN.pth')
 
 stop = timeit.default_timer()
 
