@@ -19,6 +19,8 @@ import scipy.misc
 import timeit
 import piexif
 
+import math
+
 start = timeit.default_timer()
 
 """
@@ -69,11 +71,7 @@ class Net(nn.Module):
         return out
 
 net = Net()
-<<<<<<< HEAD
-net.load_state_dict(torch.load('Neural_Networks/GPUDeep_CNN_NoA_100e.pth'))
-=======
-net.load_state_dict(torch.load('Neural_Networks/Deep_CNN_NoA_25e.pth'))
->>>>>>> 0f87e3172f37f4516d577c33b33da652c9f0e33d
+net.load_state_dict(torch.load('Neural_Networks/Deep_CNN_17e.pth'))
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -117,67 +115,29 @@ features = torch.from_numpy(feature_array)
 correct = 0
 total = 0 
 
-outputs = np.zeros(len(features))
+outputs = np.zeros((len(features),3))
+
+def softmax(x):
+    """Compute softmax values for each sets of scores in x."""
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum()
 
 for i in range(0,len(features)):
     torch.manual_seed(i)
     output = net(Variable(features[i:i+1]).float())
-    _, predicted = torch.max(output.data, 1)
-    ground = target_test[i]
-    
-    outputs[i] = predicted[0] + 1
+    outputs[i] = (softmax(output.data.numpy())[0])
 
-    if(predicted[0] + 1 == ground):
+running_loss = 0
+correct = 0
+total = 0
+
+for i in range(len(outputs)):
+    if((outputs[i].argmax() + 1) != target_test[i]):
+        # Add the log of the probability to the running loss
+        running_loss += math.log1p(outputs[i][outputs[i].argmax()])
+    else:
         correct += 1
     total += 1
 
-print(outputs)
+print(running_loss/len(outputs))
 print(correct/total)
-
-"""
-correct = 0 
-total = 0 
-print(correct/total)
-
-target_array = np.array(target_list)
-targets = torch.from_numpy(target_array)
-targets = targets
-
-train = TensorDataset(features, targets)
-trainloader = DataLoader(train, batch_size=10, shuffle=False)
-
-net = Net()
-net.load_state_dict(torch.load('Neural_Networks/Full_Traditional_CNN.pth'))
-
-error = 0.0
-running_loss = 0.0
-running_total = 0.0
-
-for i, data in enumerate(trainloader, 0):
-    # get the inputs
-    inputs, labels = data
-
-    # wrap them in Variable
-    inputs, labels = Variable(inputs), Variable(labels)
-    labels = labels.long()
-    inputs = inputs.float()
-    outputs = net(inputs)
-    print(outputs)
-
-    numpyout = outputs.data.numpy()
-    outputs = np.zeros(numpyout.shape[0])
-    
-    for i in range(labels.size()[0]):
-        outlist = numpyout[i].tolist()
-        outputs[i] = outlist.index(max(outlist))
-
-    inputs = labels.data.numpy()
-    print(inputs)
-    print(outputs)
-
-    running_loss += sum(abs(inputs - outputs))
-    running_total += numpyout.shape[0]
-
-error = running_loss / running_total
-print(error)
-"""
