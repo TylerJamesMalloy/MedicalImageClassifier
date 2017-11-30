@@ -47,7 +47,7 @@ class Net(nn.Module):
         out = self.fc(out)
         return out
 
-net = Net()
+net = Net().cuda()
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -77,7 +77,7 @@ for type in classes:
     else: 
         continue
 
-    image_folder = glob.iglob("../processed_images/Full_Size/" + type + "/*.jpg")
+    image_folder = glob.iglob("../processed_images/WithGreen/" + type + "/*.jpg")
 
     for filename in image_folder:
         piexif.remove(filename)
@@ -140,7 +140,7 @@ for epoch in range(100):
         inputs, labels = data
 
         # wrap them in Variable
-        inputs, labels = Variable(inputs), Variable(labels)
+        inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
         labels = labels.long()
         labels = labels - 1
 
@@ -176,7 +176,7 @@ for epoch in range(100):
 
     for i in range(0,len(features)):
         torch.manual_seed(i)
-        output = net(Variable(features[i:i+1]).float())
+        output = net(Variable(features[i:i+1]).float().cuda())
         outputs[i] = (softmax(output.data.numpy())[0])
 
     running_loss = 0
@@ -194,7 +194,7 @@ for epoch in range(100):
     print(running_loss/len(outputs))
     print(correct/total)
 
-    torch.save(net.state_dict(), '../classifier/Neural_Networks/Deep_CNN_NoGreen_' + str(epoch) + '.pth')
+    torch.save(net.state_dict(), '../classifier/Neural_Networks/NEW_Deep_CNN_NoGreen_' + str(epoch) + '.pth')
 
 print('Finished Training')
 

@@ -267,10 +267,11 @@ def parallelize_image_cropping(image_ids):
             """
             img = img[ret[i][2][1]:ret[i][2][1]+ret[i][2][3],ret[i][2][0]:ret[i][2][0]+ret[i][2][2]]
             # Save image 
-            out_filepath =  "../processed_images/Full_Size/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
+            out_filepath =  "../processed_images/Full_Size/" + type[1] + "2/" + image_ids[type[0]][i] + type[1] + ".jpg"
             print(out_filepath)
             cv2.imwrite(out_filepath,cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
 
+            """ 
             if(img.shape[0] > img.shape[1]):
                 tile_size = (int(img.shape[1]*32/img.shape[0]), 32)
             else:
@@ -280,6 +281,7 @@ def parallelize_image_cropping(image_ids):
             # Save image 
             out_filepath =  "../processed_images/32x32/" + type[1] + "/" + image_ids[type[0]][i] + type[1] + ".jpg"
             cv2.imwrite(out_filepath,cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+            """
         
         ret = []
     out.close()
