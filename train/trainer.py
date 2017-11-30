@@ -45,7 +45,7 @@ class Net(nn.Module):
         out = self.fc(out)
         return out
 
-net = Net().cuda()
+net = Net()
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -106,7 +106,7 @@ for epoch in range(50):
         inputs, labels = data
 
         # wrap them in Variable
-        inputs, labels = Variable(inputs).cuda(), Variable(labels).cuda()
+        inputs, labels = Variable(inputs), Variable(labels)
         labels = labels.long()
         labels = labels - 1
 

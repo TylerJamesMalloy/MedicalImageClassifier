@@ -68,7 +68,7 @@ class Net(nn.Module):
         out = self.fc(out)
         return out
 
-net = Net().cuda()
+net = Net()
 net.load_state_dict(torch.load('Neural_Networks/Deep_CNN_NoA.pth'))
 
 criterion = nn.CrossEntropyLoss()
@@ -117,7 +117,7 @@ outputs = np.zeros(len(features))
 
 for i in range(0,len(features)):
     torch.manual_seed(i)
-    output = net(Variable(features[i:i+1]).float().cuda())
+    output = net(Variable(features[i:i+1]).float())
     _, predicted = torch.max(output.data, 1)
     ground = target_test[i]
     
