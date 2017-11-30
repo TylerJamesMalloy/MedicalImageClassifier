@@ -260,4 +260,3 @@ if __name__ == '__main__':
             test_loss[0], correct))
 
     print('Finished Training')
-    torch.save(model.state_dict(), '../classifier/Neural_Networks/Capsule_Network.pth')
