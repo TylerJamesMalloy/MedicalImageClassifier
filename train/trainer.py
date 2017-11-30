@@ -45,7 +45,7 @@ class Net(nn.Module):
         out = self.fc(out)
         return out
 
-net = Net().cuda()
+net = Net()
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -99,14 +99,14 @@ targets = torch.from_numpy(target_array)
 train = TensorDataset(features, targets)
 trainloader = DataLoader(train, batch_size=4, shuffle=True, num_workers=2)
 
-for epoch in range(50):  
+for epoch in range(17):  
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs
         inputs, labels = data
 
         # wrap them in Variable
-        inputs, labels = Variable(inputs).cuda(), Variable(labels).cuda()
+        inputs, labels = Variable(inputs), Variable(labels)
         labels = labels.long()
         labels = labels - 1
 
@@ -133,7 +133,7 @@ for epoch in range(50):
 
 print('Finished Training')
 
-torch.save(net.state_dict(), '../classifier/Neural_Networks/Deep_CNN_NoA_100e.pth')
+torch.save(net.state_dict(), '../classifier/Neural_Networks/Deep_CNN_NoG_25e.pth')
 
 stop = timeit.default_timer()
 

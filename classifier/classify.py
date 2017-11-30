@@ -69,7 +69,11 @@ class Net(nn.Module):
         return out
 
 net = Net()
+<<<<<<< HEAD
 net.load_state_dict(torch.load('Neural_Networks/GPUDeep_CNN_NoA_100e.pth'))
+=======
+net.load_state_dict(torch.load('Neural_Networks/Deep_CNN_NoA_25e.pth'))
+>>>>>>> 0f87e3172f37f4516d577c33b33da652c9f0e33d
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
