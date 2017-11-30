@@ -177,7 +177,7 @@ for epoch in range(100):
     for i in range(0,len(features)):
         torch.manual_seed(i)
         output = net(Variable(features[i:i+1]).float().cuda())
-        outputs[i] = (softmax(output.data.numpy())[0])
+        outputs[i] = (softmax(output.data.cpu().numpy())[0])
 
     running_loss = 0
     correct = 0
