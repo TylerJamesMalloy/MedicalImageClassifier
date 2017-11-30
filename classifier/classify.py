@@ -68,8 +68,8 @@ class Net(nn.Module):
         out = self.fc(out)
         return out
 
-net = Net()
-net.load_state_dict(torch.load('Neural_Networks/Deep_CNN.pth'))
+net = Net().cuda()
+net.load_state_dict(torch.load('Neural_Networks/Deep_CNN_NoA.pth'))
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -104,7 +104,7 @@ for file_index, filename in enumerate(image_folder):
     image = np.swapaxes(image,0,2)
     feature_list.append(image)
     target_list.append(target_test[file_index])
-    print(image_folder[file_index])
+    # print(image_folder[file_index])
 
 feature_array = np.array(feature_list)
 features = torch.from_numpy(feature_array)
@@ -117,7 +117,7 @@ outputs = np.zeros(len(features))
 
 for i in range(0,len(features)):
     torch.manual_seed(i)
-    output = net(Variable(features[i:i+1]).float())
+    output = net(Variable(features[i:i+1]).float().cuda())
     _, predicted = torch.max(output.data, 1)
     ground = target_test[i]
     
