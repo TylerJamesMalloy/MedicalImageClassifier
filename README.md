@@ -1,7 +1,13 @@
 # Medical Image Classifier
 
+## Team
+Tyler Malloy, Austin Wallace, Varoon Mathur, Matthias Lee
+
 ## Project 
 This project was created to compare the ability of a deep convolutional neural network with the newly developed [capsule network](http://papers.nips.cc/paper/6975-dynamic-routing-between-capsules.pdf) outlined in NIPS 2017. The domain of this comparison is image classification of cervical cancer with image data retrieved from the [Intel & MobileODT Cervical Cancer Screening](https://www.kaggle.com/c/intel-mobileodt-cervical-cancer-screening) Kaggle competition.
+
+## Motivation
+Capsule networks, as described by Hinton et. al (2017), was recently introduced as a network that is more robust to detecting how images and objects are positioned and more easily able to generalize these spatial relationships. By nesting another layer of neurons within a layer in an NN (a capsule), lower and higher-level capsules can connect to provide better feature detection in lower layers of the image, and is a much more effective method than the max-pooling mechanism in CNNs (which essentially reduces the spatial size of the image in order to pick the largest feature, considered to be crude). While this new methodology has shown to outperform CNNs on the classical MNIST data set of images, we wished to understand their comparison on a most robust image dataset.
 
 ### Data Pre-Processing 
 
